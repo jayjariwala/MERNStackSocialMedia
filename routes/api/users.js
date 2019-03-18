@@ -1,15 +1,23 @@
 const router = require('express').Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
-
+const validateRegisterInput = require('../../validations/register');
 
 //load models
 const User = require('../../models/Users');
-
 //@route GET api/users/register
 //@desc Register user
 //@access Public
 router.post('/register', (req, res) => {
+
+    const { errors, isValid} = validateRegisterInput(req.body);
+
+    //check validation
+    if(!isValid) {
+        console.log('condition');
+        return res.status(400).json(errors);
+    }
+
     User.findOne({ email: req.body.email}).then(user => {
         if(user) {
             res.status(400).json(`Email already exist!`);
